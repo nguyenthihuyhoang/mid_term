@@ -15,7 +15,9 @@ dependencies {
   // TODO: Add the dependencies for Firebase products you want to use
   // When using the BoM, don't specify versions in Firebase dependencies
   implementation ( "com.google.firebase:firebase-analytics" )
-
+  implementation ( "com.google.firebase:firebase-storage:21.0.1" )
+  implementation ( "com.google.firebase:firebase-firestore:25.1.2")
+  implementation ("com.google.firebase:firebase-auth")
 
   // Add the dependencies for any other desired Firebase products
   // https://firebase.google.com/docs/android/setup#available-libraries
@@ -24,7 +26,7 @@ dependencies {
 android {
     namespace = "com.example.mid_term"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -40,10 +42,11 @@ android {
         applicationId = "com.example.mid_term"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        multiDexEnabled = true
     }
 
     buildTypes {

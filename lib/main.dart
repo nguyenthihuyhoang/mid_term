@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:mid_term/pages/login_page.dart';
 import 'package:mid_term/pages/product_list_page.dart';
 
 Future<void> main() async {
@@ -51,21 +52,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const ProductListPage(),
-    );
-  }
-}
-
-extension ContextExtension on BuildContext {
-  void showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(this).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor:
-            isError
-                ? Theme.of(this).colorScheme.error
-                : Theme.of(this).colorScheme.primary,
-      ),
+      home: const LoginScreen(),
     );
   }
 }
