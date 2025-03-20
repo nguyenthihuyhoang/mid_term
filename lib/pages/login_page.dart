@@ -28,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
       print(e.toString());
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Lỗi: ${e.toString()}")));
+      ).showSnackBar(SnackBar(content: Text("Login Failed")));
     }
   }
 
@@ -49,11 +49,11 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: 20),
             TextField(
               controller: passwordController,
-              decoration: InputDecoration(labelText: "Mật khẩu"),
+              decoration: InputDecoration(labelText: "Password"),
               obscureText: true,
             ),
             SizedBox(height: 20),
-            ElevatedButton(onPressed: signIn, child: Text("Đăng nhập")),
+            ElevatedButton(onPressed: signIn, child: Text("Login")),
           ],
         ),
       ),

@@ -13,8 +13,11 @@ class ProductListPage extends StatefulWidget {
 
 class _ProductListPageState extends State<ProductListPage> {
   List<Product> _products = [];
+  List<Product> _filteredProducts = [];
   bool _isLoading = true;
   final firebaseService = FirebaseService();
+  final _searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -30,6 +33,7 @@ class _ProductListPageState extends State<ProductListPage> {
       firebaseService.getProducts().listen((products) {
         setState(() {
           _products = products;
+          _filteredProducts = products;
         });
       });
     } catch (e) {
@@ -102,6 +106,16 @@ class _ProductListPageState extends State<ProductListPage> {
     }
   }
 
+  void _filterProducts(String value) {
+    setState(() {
+      _filteredProducts =
+          _products.where((product) {
+            final name = product.name.toLowerCase();
+            return name.contains(value);
+          }).toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,26 +123,54 @@ class _ProductListPageState extends State<ProductListPage> {
         title: const Text('Products Management'),
         centerTitle: true,
       ),
-      body:
+      body: Column(
+        children: [
+          _buildSearchBar(),
           _isLoading
               ? const Center(child: CircularProgressIndicator())
-              : _products.isEmpty
+              : _filteredProducts.isEmpty
               ? const Center(child: Text('No products found'))
-              : ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: _products.length,
-                itemBuilder: (context, index) {
-                  final product = _products[index];
-                  return ProductCard(
-                    product: product,
-                    onEdit: () => _editProduct(product),
-                    onDelete: () => _deleteProduct(product),
-                  );
-                },
+              : Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _filteredProducts.length,
+                  itemBuilder: (context, index) {
+                    final product = _filteredProducts[index];
+                    return ProductCard(
+                      product: product,
+                      onEdit: () => _editProduct(product),
+                      onDelete: () => _deleteProduct(product),
+                    );
+                  },
+                ),
               ),
+        ],
+      ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: _addProduct,
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: TextField(
+        onChanged: _filterProducts,
+        controller: _searchController,
+        decoration: InputDecoration(
+          hintText: 'Search products...',
+          prefixIcon: const Icon(Icons.search),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.grey[200],
+          contentPadding: const EdgeInsets.symmetric(vertical: 0),
+        ),
       ),
     );
   }

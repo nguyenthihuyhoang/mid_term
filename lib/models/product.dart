@@ -30,7 +30,6 @@ class Product {
       'price': price,
       'category': category,
       'imageUrl': imageUrl,
-      'createdAt': DateTime.now().millisecondsSinceEpoch,
     };
   }
 
