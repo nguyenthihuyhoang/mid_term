@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -22,6 +24,7 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
 
   String? _imageUrl;
   bool _isUploading = false;
+  File? _imageFile;
 
   @override
   void initState() {
@@ -53,6 +56,7 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
       if (pickedFile == null) return;
 
       setState(() {
+        _imageFile = File(pickedFile.path);
         _isUploading = true;
       });
 
@@ -75,10 +79,10 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
         name: _nameController.text.trim(),
         price: double.parse(_priceController.text.trim()),
         category: _categoryController.text.trim(),
-        imageUrl: _imageUrl,
+        imageUrl: _imageUrl ?? '',
       );
 
-      Navigator.of(context).pop(product);
+      Navigator.of(context).pop({'product': product, 'imageFile': _imageFile});
     }
   }
 

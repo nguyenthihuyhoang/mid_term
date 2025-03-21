@@ -1,41 +1,44 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mid_term/pages/login_page.dart';
 import 'package:mid_term/pages/product_list_page.dart';
-import 'package:mid_term/pages/register_page.dart';
+import 'package:mid_term/services/auth_service%20.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final AuthService _authService = AuthService();
   bool _isPasswordVisible = false;
   bool _isLoading = false;
 
-  Future<void> signIn() async {
+  Future<void> signUp() async {
     setState(() {
       _isLoading = true;
     });
 
     try {
-      await _auth.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
+      final User? user = await _authService.signUp(
+        emailController.text,
+        passwordController.text,
       );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => ProductListPage()),
-      );
+      if (user != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => ProductListPage()),
+        );
+      }
     } catch (e) {
       print(e.toString());
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Login Failed"),
+          content: Text("Register Failed"),
           backgroundColor: Colors.red.shade400,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -91,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  "Sign in to continue",
+                  "Sign Up to continue",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 16, color: Colors.black54),
                 ),
@@ -166,29 +169,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     contentPadding: EdgeInsets.symmetric(vertical: 16),
                   ),
                 ),
-                const SizedBox(height: 12),
-                // Forgot Password
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {
-                      // Forgot password functionality would go here
-                    },
-                    child: Text(
-                      "Forgot Password?",
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
                 const SizedBox(height: 24),
                 // Login Button
                 SizedBox(
                   height: 56,
                   child: ElevatedButton(
-                    onPressed: _isLoading ? null : signIn,
+                    onPressed: _isLoading ? null : signUp,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).primaryColor,
                       foregroundColor: Colors.white,
@@ -209,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             )
                             : Text(
-                              "Login",
+                              "Register",
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -223,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Don't have an account? ",
+                      "You have an account? ",
                       style: TextStyle(color: Colors.black54),
                     ),
                     TextButton(
@@ -231,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const RegisterPage(),
+                            builder: (context) => LoginScreen(),
                           ),
                         );
                       },

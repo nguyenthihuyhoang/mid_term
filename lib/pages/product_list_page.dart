@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mid_term/components/product_card.dart';
 import 'package:mid_term/components/product_form_dialog.dart';
 import 'package:mid_term/models/product.dart';
+import 'package:mid_term/pages/login_page.dart';
+import 'package:mid_term/services/auth_service%20.dart';
 import 'package:mid_term/services/firebase_service.dart';
 
 class ProductListPage extends StatefulWidget {
@@ -17,6 +22,8 @@ class _ProductListPageState extends State<ProductListPage> {
   bool _isLoading = true;
   final firebaseService = FirebaseService();
   final _searchController = TextEditingController();
+  final AuthService _authService = AuthService();
+  File? _imageFile;
 
   @override
   void initState() {
@@ -46,14 +53,17 @@ class _ProductListPageState extends State<ProductListPage> {
   }
 
   Future<void> _addProduct() async {
-    final result = await showDialog<Product?>(
+    final result = await showDialog<Map<String, dynamic>?>(
       context: context,
       builder: (context) => const ProductFormDialog(),
     );
 
     if (result != null) {
+      final product = result['product'] as Product;
+      final imageFile = result['imageFile'] as File?;
+
       try {
-        firebaseService.addProduct(result);
+        firebaseService.addProduct(product, imageFile);
         if (mounted) {}
       } catch (e) {
         if (mounted) {}
@@ -62,14 +72,17 @@ class _ProductListPageState extends State<ProductListPage> {
   }
 
   Future<void> _editProduct(Product product) async {
-    final result = await showDialog<Product?>(
+    final result = await showDialog<Map<String, dynamic>?>(
       context: context,
       builder: (context) => ProductFormDialog(product: product),
     );
 
     if (result != null) {
+      final product = result['product'] as Product;
+      final imageFile = result['imageFile'] as File?;
+
       try {
-        firebaseService.updateProduct(result);
+        firebaseService.updateProduct(product, imageFile);
         if (mounted) {}
       } catch (e) {
         if (mounted) {}
@@ -116,12 +129,31 @@ class _ProductListPageState extends State<ProductListPage> {
     });
   }
 
+  Future<void> _logout() async {
+    await _authService.signOut();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Products Management'),
         centerTitle: true,
+        actions: [
+          TextButton(
+            onPressed: () {
+              _logout();
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [Text('Logout '), Icon(Icons.logout)],
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: [

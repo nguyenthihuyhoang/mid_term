@@ -8,8 +8,12 @@ class FirebaseService {
       .collection('products');
 
   // Thêm sản phẩm
-  Future<void> addProduct(Product product) async {
+  Future<void> addProduct(Product product, File? imageFile) async {
     try {
+      if (imageFile != null) {
+        final String imageUrl = await uploadImage(imageFile);
+        product = product.copyWith(imageUrl: imageUrl);
+      }
       DocumentReference docRef =
           productCollection.doc(); // Tạo document ID tự động
       String id = docRef.id;
@@ -26,7 +30,7 @@ class FirebaseService {
     try {
       String fileName = DateTime.now().millisecondsSinceEpoch.toString();
       Reference storageRef = FirebaseStorage.instance.ref().child(
-        'products/$fileName',
+        'Clothes/$fileName',
       );
       UploadTask uploadTask = storageRef.putFile(imageFile);
       await uploadTask;
@@ -48,8 +52,12 @@ class FirebaseService {
   }
 
   // Cập nhật sản phẩm
-  Future<void> updateProduct(Product product) async {
+  Future<void> updateProduct(Product product, File? imageFile) async {
     try {
+      if (imageFile != null) {
+        final String imageUrl = await uploadImage(imageFile);
+        product = product.copyWith(imageUrl: imageUrl);
+      }
       await productCollection.doc(product.id).update(product.toJson());
       print("Cập nhật sản phẩm thành công!");
     } catch (e) {
